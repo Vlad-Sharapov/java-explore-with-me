@@ -3,7 +3,7 @@ services:
   stats-server:
     ports:
       - "9090:9090"
-    build: stat/stat-service/
+    build: stat-service/stat-server/
     container_name: stat-service
     depends_on:
       - stats-db

@@ -9,11 +9,8 @@ services:
       - stats-db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
-      - DB_NAME=stats-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - DB_HOST=stats-db
-      - DB_PORT=5432
 
   stats-db:
     image: postgres:14-alpine

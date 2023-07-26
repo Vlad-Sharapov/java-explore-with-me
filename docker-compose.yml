@@ -1,6 +1,6 @@
 version: '3.1'
 services:
-  main-service:
+  ewm-service:
     ports:
       - "8080:8080"
     build: main-service/

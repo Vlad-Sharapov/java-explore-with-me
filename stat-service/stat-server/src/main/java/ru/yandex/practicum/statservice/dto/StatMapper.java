@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 public class StatMapper {
 
-
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static HitDto toHitDto(Hit hit) {
-        String timestamp = hit.getTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String timestamp = hit.getTime().format(formatter);
 
         return HitDto.builder()
                 .id(hit.getId())
@@ -29,7 +29,7 @@ public class StatMapper {
 
     public static Hit toHit(HitDto hitDto) {
         LocalDateTime timestamp = LocalDateTime.parse(hitDto.getTimestamp(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                formatter);
 
         return Hit.builder()
                 .id(hitDto.getId())

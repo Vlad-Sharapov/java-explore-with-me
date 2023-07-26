@@ -43,13 +43,13 @@ public class StatClient {
         parametersMap.put("end", parameters.getEnd().format(formatter));
 
         if (parameters.hasUris()) {
-            parametersMap.put("uris", parameters.getUris());
+            parametersMap.put("uris", String.join(",", parameters.getUris()));
             path.queryParam("uris", "{uris}");
         }
 
         if (parameters.hasUnique()) {
             parametersMap.put("unique", parameters.getUnique());
-            path.queryParam("uris", "{uris}");
+            path.queryParam("unique", "{unique}");
         }
 
         String urlTemplate = path

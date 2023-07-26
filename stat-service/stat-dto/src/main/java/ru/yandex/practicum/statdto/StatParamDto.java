@@ -10,11 +10,10 @@ import java.util.List;
 @Data
 public class StatParamDto {
 
-    private String host;
     private LocalDateTime start;
     private LocalDateTime end;
     private List<String> uris;
-    private String unique;
+    private Boolean unique;
 
 
     public boolean hasUris() {
@@ -24,4 +23,6 @@ public class StatParamDto {
     public boolean hasUnique() {
         return unique != null;
     }
+
+
 }

@@ -1,5 +1,28 @@
 version: '3.1'
 services:
+  main-service:
+    ports:
+      - "8080:8080"
+    build: main-service/
+    container_name: main-service
+    depends_on:
+      - stats-server
+      - ewm-service-db
+    environment:
+      - STATE_SERVER_URL=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-service-db:5432/ewm-service-db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+  ewm-service-db:
+    image: postgres:14-alpine
+    container_name: ewm-service-db
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=ewm-service-db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+
   stats-server:
     ports:
       - "9090:9090"
@@ -22,18 +45,3 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
-#  ewm-service:
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - ewm-db
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ewm-service
-#      - DB_NAME=Shareit-db
-#      - POSTGRES_USER=root
-#      - POSTGRES_PASSWORD=root
-#      - DB_HOST=db
-#      - DB_PORT=5432
-#
-#  ewm-db:
-#    image: postgres:14-alpine

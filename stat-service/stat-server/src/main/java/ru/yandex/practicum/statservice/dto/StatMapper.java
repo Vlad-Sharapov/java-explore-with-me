@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 public class StatMapper {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+
     public static HitDto toHitDto(Hit hit) {
         String timestamp = hit.getTime().format(formatter);
 

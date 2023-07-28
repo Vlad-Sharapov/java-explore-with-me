@@ -38,7 +38,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     @Override
     public CompilationDto add(NewCompilationDto compilationDto) {
-        Set<Event> events = eventRepository.findAllByIdEager(compilationDto.getEvents());
+        Set<Event> events = eventRepository.findAllByIdAsSet(compilationDto.getEvents());
         Compilation savedCompilation = compilationRepository.save(toCompilation(compilationDto, events));
         List<StatsDto> statsDtos = clientHandler.getStatsForEvents(events, LocalDateTime.now().minusYears(100), LocalDateTime.now());
         List<Request> confirmedRequests = requestRepository.findAllByStatusAndEventIn(CONFIRMED, events);
@@ -49,7 +49,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     public CompilationDto update(long compilationId, NewCompilationDto compilationDto) {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new EntityNotFoundException("Compilation with id=%s was not found"));
-        Set<Event> events = eventRepository.findAllByIdEager(compilationDto.getEvents());
+        Set<Event> events = eventRepository.findAllByIdAsSet(compilationDto.getEvents());
         Compilation updatedCompilation = updateCompilation(compilationDto, compilation, events);
         Compilation savedCompilation = compilationRepository.save(updatedCompilation);
         List<StatsDto> statsDtos = clientHandler.getStatsForEvents(events, LocalDateTime.now().minusYears(100), LocalDateTime.now());

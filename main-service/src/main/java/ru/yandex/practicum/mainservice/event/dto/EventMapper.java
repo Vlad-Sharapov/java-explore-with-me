@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.event.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.event.model.Event;
 import ru.yandex.practicum.mainservice.requests.model.Request;
@@ -16,6 +17,7 @@ import static ru.yandex.practicum.mainservice.category.dto.CategoryMapper.toCate
 import static ru.yandex.practicum.mainservice.event.dto.LocationMapper.toLocationDto;
 import static ru.yandex.practicum.mainservice.user.dto.UserMapper.toUserDto;
 
+@UtilityClass
 public class EventMapper {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

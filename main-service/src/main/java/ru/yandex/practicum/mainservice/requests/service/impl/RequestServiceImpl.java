@@ -40,7 +40,7 @@ public class RequestServiceImpl implements RequestService {
                 .findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%s was not found", userId)));
         Event event = eventRepository
-                .findByIdEager(eventId)
+                .findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
         Request maybeNewRequest = makeRequest(user, event);
         validateRequest(maybeNewRequest);

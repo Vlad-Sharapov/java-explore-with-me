@@ -1,15 +1,13 @@
 package ru.yandex.practicum.mainservice.compilation.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.yandex.practicum.mainservice.event.model.Event;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "compilation")
 @Builder(toBuilder = true)
@@ -27,10 +25,8 @@ public class Compilation {
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private Set<Event> events;
 
-    @Column
     private Boolean pinned;
 
-    @Column
     private String title;
 
 }

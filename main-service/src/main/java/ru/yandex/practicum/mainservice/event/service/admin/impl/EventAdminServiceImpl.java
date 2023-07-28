@@ -50,7 +50,7 @@ public class EventAdminServiceImpl implements EventAdminService {
     public EventFullDto update(long eventId, UpdateEventAdminRequest updateEvent) {
         updateEvent.setId(eventId);
         Event event = eventRepository
-                .findByIdEager(eventId)
+                .findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
 
         Event updatedEvent = updateEvent(event, updateEvent);
@@ -117,8 +117,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         if (updateEvent.getEventDate() != null) {
             if (event.getPublishedOn() != null &&
                     event.getPublishedOn().isBefore(updateEvent.getEventDate().minusHours(1))) {
-                throw new EntitiesConflictException("the start date of the event to be modified must be " +
-                        "no earlier than an hour from the date of publication");
+                throw new EntitiesConflictException("the start date of the event to be modified must be no earlier than an hour from the date of publication");
             }
             builder.eventDate(updateEvent.getEventDate());
         }

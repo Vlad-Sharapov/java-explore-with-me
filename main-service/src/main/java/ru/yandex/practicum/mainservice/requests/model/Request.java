@@ -1,10 +1,7 @@
 package ru.yandex.practicum.mainservice.requests.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.yandex.practicum.mainservice.event.model.Event;
 import ru.yandex.practicum.mainservice.requests.enums.RequestStatus;
 import ru.yandex.practicum.mainservice.user.model.User;
@@ -12,19 +9,19 @@ import ru.yandex.practicum.mainservice.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "requests")
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)

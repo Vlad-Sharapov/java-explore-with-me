@@ -1,9 +1,6 @@
 package ru.yandex.practicum.mainservice.event.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.event.enums.EventState;
 import ru.yandex.practicum.mainservice.user.model.User;
@@ -11,9 +8,10 @@ import ru.yandex.practicum.mainservice.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "events")
-@Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,17 +21,15 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "initiator_id", nullable = false)
     private User initiator;
 
-    @Column
     private String annotation;
 
-    @Column
     private String title;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
@@ -43,13 +39,12 @@ public class Event {
     @Column(name = "create_on")
     private LocalDateTime createOn = LocalDateTime.now().withNano(0);
 
-    @Column
     private String description;
 
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 

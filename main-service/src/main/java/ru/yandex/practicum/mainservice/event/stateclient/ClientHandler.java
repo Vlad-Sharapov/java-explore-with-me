@@ -29,12 +29,13 @@ public class ClientHandler {
     @Value("${state-server.url}")
     private String host;
 
-    private static final String APP = "ewm-main-service";
+    @Value("${main-server.app-name}")
+    private String APP;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
-    public  List<StatsDto> getStatsForEvent(Event event, LocalDateTime start, LocalDateTime end) {
+    public List<StatsDto> getStatsForEvent(Event event, LocalDateTime start, LocalDateTime end) {
         List<String> uris = List.of("/events/" + event.getId());
         StatParamDto statParamDto = StatParamDto.builder()
                 .start(start)

@@ -1,7 +1,9 @@
 package ru.yandex.practicum.mainservice.category.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.mainservice.category.model.Category;
 
+@UtilityClass
 public class CategoryMapper {
 
     public static CategoryDto toCategoryDto(Category category) {

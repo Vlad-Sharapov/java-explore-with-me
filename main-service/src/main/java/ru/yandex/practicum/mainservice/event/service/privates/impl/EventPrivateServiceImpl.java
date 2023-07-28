@@ -56,8 +56,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Transactional
     @Override
     public EventFullDto add(long userId, NewEventDto newEventDto) {
-        User user = userRepository
-                .findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = findUser(userId);
         Category category = categoryRepository
                 .findById(newEventDto.getCategory())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
@@ -67,19 +66,15 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             Event newEvent = eventRepository.save(event);
             return toEventFullDto(newEvent, confirmedRequests);
         } catch (DataIntegrityViolationException e) {
-            throw new BadRequestException("eeee");
+            throw new BadRequestException("Required fields are not filled in");
         }
     }
 
     @Transactional
     @Override
     public EventFullDto update(long userId, long eventId, UpdateEventUserRequest updateEvent) {
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%s was not found", userId)));
-        Event event = eventRepository
-                .findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
+        User user = findUser(userId);
+        Event event = findEvent(eventId);
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new EntitiesConflictException("The user can only change his own events");
         }
@@ -93,9 +88,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public List<EventShortDto> getAllUserEvents(long userId, int from, int size) {
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%s was not found", userId)));
+        User user = findUser(userId);
 
         PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
 
@@ -114,10 +107,9 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public EventFullDto getUserEvent(long userId, long eventId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%s was not found", userId)));
+        findUser(userId);
         Event event = eventRepository
-                .findByIdEager(eventId)
+                .findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
         long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, event.getId());
         return toEventFullDto(event,
@@ -128,23 +120,17 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Override
     public List<ParticipationRequestDto> getUserEventRequests(long userId, long eventId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%s was not found", userId)));
-        Event event = eventRepository
-                .findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
+        findUser(userId);
+        Event event = findEvent(eventId);
         List<Request> userEventRequests = requestRepository.findAllByEventId(event.getId());
         return toParticipationRequestDto(userEventRequests);
     }
 
-    @Override
     @Transactional
+    @Override
     public EventRequestStatusUpdateResult confirmRequests(long userId, long eventId, EventRequestStatusUpdateRequest updateResult) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%s was not found", userId)));
-        Event event = eventRepository
-                .findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
+        findUser(userId);
+        Event event = findEvent(eventId);
         List<Request> eventRequests = requestRepository.findAllByEventId(eventId);
         List<Request> requests = updateRequestsStatus(event, eventRequests, updateResult);
         return makeResponse(requestRepository.saveAll(requests));
@@ -199,9 +185,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                     .count();
             if ((confirmedRequests + maybeUpdatedRequests.size()) > participantLimit) {
                 throw new EntitiesConflictException("The limit of requests for the event has been reached");
-//                return requests.stream().filter(request -> maybeUpdatedRequests.contains(request.getId()))
-//                        .peek(request -> request.setStatus(REJECTED))
-//                        .collect(Collectors.toList());
             }
             return requests.stream().filter(request -> maybeUpdatedRequests.contains(request.getId()))
                     .peek(request -> request.setStatus(updateResult.getStatus()))
@@ -230,4 +213,14 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 .build();
     }
 
+    private User findUser(Long userId) {
+        return userRepository
+                .findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+
+    private Event findEvent(Long eventId) {
+        return eventRepository
+                .findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
+    }
 }

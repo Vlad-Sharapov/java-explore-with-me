@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.requests.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.mainservice.requests.model.Request;
 
 import java.time.format.DateTimeFormatter;
@@ -7,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class RequestMapper {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

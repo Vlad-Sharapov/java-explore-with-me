@@ -1,8 +1,10 @@
 package ru.yandex.practicum.mainservice.user.dto;
 
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.mainservice.user.model.User;
 
+@UtilityClass
 public class UserMapper {
 
     public static UserDto toUserDto(User user) {

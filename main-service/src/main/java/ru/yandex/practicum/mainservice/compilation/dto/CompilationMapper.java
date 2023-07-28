@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.compilation.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.mainservice.compilation.model.Compilation;
 import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
 import ru.yandex.practicum.mainservice.event.model.Event;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.mainservice.event.dto.EventMapper.toEventShortDto;
 
-
+@UtilityClass
 public class CompilationMapper {
 
     public static Compilation toCompilation(NewCompilationDto compilationDto, Set<Event> events) {

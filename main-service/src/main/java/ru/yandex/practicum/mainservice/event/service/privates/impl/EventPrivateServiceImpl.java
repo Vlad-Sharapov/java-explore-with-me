@@ -20,6 +20,8 @@ import ru.yandex.practicum.mainservice.event.stateclient.ClientHandler;
 import ru.yandex.practicum.mainservice.exceptions.BadRequestException;
 import ru.yandex.practicum.mainservice.exceptions.EntitiesConflictException;
 import ru.yandex.practicum.mainservice.exceptions.EntityNotFoundException;
+import ru.yandex.practicum.mainservice.location.model.Location;
+import ru.yandex.practicum.mainservice.location.service.admin.LocationAdminService;
 import ru.yandex.practicum.mainservice.requests.dto.EventRequestStatusUpdateResult;
 import ru.yandex.practicum.mainservice.requests.dto.ParticipationRequestDto;
 import ru.yandex.practicum.mainservice.requests.model.EventRequestStatusUpdateRequest;
@@ -52,6 +54,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     private final RequestRepository requestRepository;
 
+    private final LocationAdminService locationService;
 
     @Transactional
     @Override
@@ -59,8 +62,10 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         User user = findUser(userId);
         Category category = categoryRepository
                 .findById(newEventDto.getCategory())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException(String
+                        .format("Category with id=%s was not found", newEventDto.getCategory())));
         Event event = EventMapper.toEvent(newEventDto, user, category);
+        event.setLocation(locationService.findAddedLocation(event.getLocation()));
         long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, event.getId());
         try {
             Event newEvent = eventRepository.save(event);
@@ -154,7 +159,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             builder.eventDate(updateEvent.getEventDate());
         }
         if (updateEvent.getLocation() != null) {
-            builder.location(updateEvent.getLocation());
+            Location foundLocation = locationService.findAddedLocation(updateEvent.getLocation());
+            builder.location(foundLocation);
         }
         if (updateEvent.getPaid() != null) {
             builder.paid(updateEvent.getPaid());

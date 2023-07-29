@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.mainservice.event.model.Location;
 import ru.yandex.practicum.mainservice.event.utils.IsAfterHours;
+import ru.yandex.practicum.mainservice.location.model.Location;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;

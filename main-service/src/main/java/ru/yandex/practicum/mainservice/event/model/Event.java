@@ -3,6 +3,7 @@ package ru.yandex.practicum.mainservice.event.model;
 import lombok.*;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.event.enums.EventState;
+import ru.yandex.practicum.mainservice.location.model.Location;
 import ru.yandex.practicum.mainservice.user.model.User;
 
 import javax.persistence.*;

@@ -48,7 +48,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     @Override
     public CompilationDto update(long compilationId, NewCompilationDto compilationDto) {
         Compilation compilation = compilationRepository.findById(compilationId)
-                .orElseThrow(() -> new EntityNotFoundException("Compilation with id=%s was not found"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Compilation with id=%s was not found", compilationId)));
         Set<Event> events = eventRepository.findAllByIdAsSet(compilationDto.getEvents());
         Compilation updatedCompilation = updateCompilation(compilationDto, compilation, events);
         Compilation savedCompilation = compilationRepository.save(updatedCompilation);

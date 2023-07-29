@@ -1,22 +1,27 @@
-package ru.yandex.practicum.mainservice.event.model;
+package ru.yandex.practicum.mainservice.location.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "location")
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Location {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private Double lat;
 
-    @Column
     private Double lon;
+
+    private Double radius;
+
+    private String name;
 
 }

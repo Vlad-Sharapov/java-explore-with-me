@@ -32,6 +32,7 @@ class StatClientTest {
         ResponseEntity<List<StatsDto>> stat = statClient.getStat(statServerUrl, StatParamDto.builder()
                 .start(LocalDateTime.now().minusHours(8))
                 .end(LocalDateTime.now().plusHours(1))
+                        .uris(List.of("/events/1","/events/2"))
                 .build());
         List<StatsDto> statsDtos1 = stat.getBody();
         System.out.println(statsDtos1);

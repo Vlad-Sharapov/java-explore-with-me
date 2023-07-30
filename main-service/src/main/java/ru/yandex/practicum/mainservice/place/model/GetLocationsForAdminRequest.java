@@ -1,4 +1,4 @@
-package ru.yandex.practicum.mainservice.location.model;
+package ru.yandex.practicum.mainservice.place.model;
 
 import lombok.Builder;
 import lombok.Data;

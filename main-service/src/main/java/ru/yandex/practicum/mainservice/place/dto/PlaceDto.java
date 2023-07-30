@@ -1,20 +1,26 @@
-package ru.yandex.practicum.mainservice.location.dto;
+package ru.yandex.practicum.mainservice.place.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 
 @Getter
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LocationDtoForAdmin extends NewLocationDto {
+public class PlaceDto {
+
+    private Long id;
+
+    private Double lat;
+
+    private Double lon;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Positive(message = "Field: radius. Error: The field cannot be negative")

@@ -931,7 +931,7 @@
           "variable": [
             {
               "key": "eventId",
-              "value": "109",
+              "value": "106",
               "description": "(Required) id события"
             }
           ]

@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "8d7958aa-a580-4584-a4bf-1acfb821d4ba",
+    "_postman_id": "f478c0ee-2bfc-410d-9ab0-80b3cabb6b82",
     "name": "Location processing",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "16820195"
@@ -931,7 +931,7 @@
           "variable": [
             {
               "key": "eventId",
-              "value": "2",
+              "value": "106",
               "description": "(Required) id события"
             }
           ]

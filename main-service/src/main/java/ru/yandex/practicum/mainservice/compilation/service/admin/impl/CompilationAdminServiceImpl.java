@@ -2,6 +2,7 @@ package ru.yandex.practicum.mainservice.compilation.service.admin.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.mainservice.compilation.dto.CompilationDto;
 import ru.yandex.practicum.mainservice.compilation.dto.NewCompilationDto;
 import ru.yandex.practicum.mainservice.compilation.model.Compilation;
@@ -36,6 +37,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     private final CompilationRepository compilationRepository;
 
+    @Transactional
     @Override
     public CompilationDto add(NewCompilationDto compilationDto) {
         Set<Event> events = eventRepository.findAllByIdAsSet(compilationDto.getEvents());
@@ -45,6 +47,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         return toCompilationDto(savedCompilation, statsDtos, confirmedRequests);
     }
 
+    @Transactional
     @Override
     public CompilationDto update(long compilationId, NewCompilationDto compilationDto) {
         Compilation compilation = compilationRepository.findById(compilationId)
@@ -57,6 +60,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         return toCompilationDto(savedCompilation, statsDtos, confirmedRequests);
     }
 
+    @Transactional
     @Override
     public void delete(long compilationId) {
         Compilation compilation = compilationRepository.findById(compilationId)

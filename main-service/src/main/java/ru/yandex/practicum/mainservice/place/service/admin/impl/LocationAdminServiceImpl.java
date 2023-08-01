@@ -3,6 +3,7 @@ package ru.yandex.practicum.mainservice.place.service.admin.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.mainservice.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.mainservice.place.dto.PlaceDto;
 import ru.yandex.practicum.mainservice.place.model.Place;
@@ -20,6 +21,7 @@ public class LocationAdminServiceImpl implements LocationAdminService {
 
     private final PlaceRepository placeRepository;
 
+    @Transactional
     @Override
     public PlaceDto add(PlaceDto placeDto) {
         Place place = toPlace(placeDto);
@@ -27,6 +29,7 @@ public class LocationAdminServiceImpl implements LocationAdminService {
         return toPlaceDto(savedPlace);
     }
 
+    @Transactional
     @Override
     public PlaceDto update(PlaceDto locationDtoForAdmin) {
         Place place = placeRepository.findById(locationDtoForAdmin.getId())
@@ -49,6 +52,7 @@ public class LocationAdminServiceImpl implements LocationAdminService {
         return toPlaceDto(places);
     }
 
+    @Transactional
     @Override
     public void delete(Long locationId) {
         Place place = placeRepository.findById(locationId)

@@ -52,14 +52,14 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     private final RequestRepository requestRepository;
 
-
     @Transactional
     @Override
     public EventFullDto add(long userId, NewEventDto newEventDto) {
         User user = findUser(userId);
         Category category = categoryRepository
                 .findById(newEventDto.getCategory())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException(String
+                        .format("Category with id=%s was not found", newEventDto.getCategory())));
         Event event = EventMapper.toEvent(newEventDto, user, category);
         long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, event.getId());
         try {

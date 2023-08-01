@@ -53,6 +53,14 @@ public class EventPublicController {
         return events;
     }
 
+    @GetMapping("/{placeId}/locations")
+    public List<EventShortDto> eventsByLocation(@PathVariable long placeId,
+                                                @RequestParam(defaultValue = "0") Integer from,
+                                                @RequestParam(defaultValue = "10") Integer size) {
+
+        return eventService.getEventsByLocation(placeId, from, size);
+    }
+
     @GetMapping("/{eventId}")
     public EventFullDto eventFullDto(@PathVariable Long eventId,
                                      HttpServletRequest request) {

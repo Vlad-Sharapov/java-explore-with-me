@@ -1,10 +1,14 @@
 package ru.yandex.practicum.mainservice.event.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class LocationDto {
 
     private Long id;
@@ -12,4 +16,5 @@ public class LocationDto {
     private Double lat;
 
     private Double lon;
+
 }

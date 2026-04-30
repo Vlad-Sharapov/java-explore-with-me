@@ -12,4 +12,6 @@ public interface EventPublicService {
 
     EventFullDto getEvent(long eventId);
 
+    List<EventShortDto> getEventsByLocation(long placeId, int from, int size);
+
 }

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.mainservice.event.model;
+package ru.yandex.practicum.mainservice.place.model;
 
 import lombok.*;
 
@@ -7,11 +7,12 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "location")
+@Table(name = "place")
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Location {
+public class Place {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,5 +20,9 @@ public class Location {
     private Double lat;
 
     private Double lon;
+
+    private Double radius;
+
+    private String name;
 
 }

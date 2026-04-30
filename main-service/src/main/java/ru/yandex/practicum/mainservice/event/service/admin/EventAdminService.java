@@ -12,4 +12,6 @@ public interface EventAdminService {
 
     List<EventFullDto> getEvents(GetEventsForAdminRequest request);
 
+    List<EventFullDto> getEventsByLocation(long placeId, int from, int size);
+
 }

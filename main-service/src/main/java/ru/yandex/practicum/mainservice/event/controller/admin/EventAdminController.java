@@ -47,4 +47,12 @@ public class EventAdminController {
                 )
         );
     }
+
+    @GetMapping("/{placeId}/locations")
+    public List<EventFullDto> eventsByLocation(@PathVariable long placeId,
+                                               @RequestParam(defaultValue = "0") Integer from,
+                                               @RequestParam(defaultValue = "10") Integer size) {
+
+        return eventService.getEventsByLocation(placeId, from, size);
+    }
 }

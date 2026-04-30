@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.mainservice.category.dto.CategoryMapper.toCategoryDto;
-import static ru.yandex.practicum.mainservice.event.dto.LocationMapper.toLocationDto;
+import static ru.yandex.practicum.mainservice.event.dto.LocationMapper.toUserLocationDto;
 import static ru.yandex.practicum.mainservice.user.dto.UserMapper.toUserDto;
 
 @UtilityClass
@@ -55,7 +55,7 @@ public class EventMapper {
                 .description(event.getDescription())
                 .createdOn(event.getCreateOn().format(formatter))
                 .eventDate(event.getEventDate().format(formatter))
-                .location(toLocationDto(event.getLocation()))
+                .location(toUserLocationDto(event.getLocation()))
                 .paid(event.isPaid())
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.isRequestModeration())

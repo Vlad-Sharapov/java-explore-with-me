@@ -19,8 +19,11 @@ import ru.yandex.practicum.mainservice.event.service.admin.EventAdminService;
 import ru.yandex.practicum.mainservice.event.stateclient.ClientHandler;
 import ru.yandex.practicum.mainservice.exceptions.EntitiesConflictException;
 import ru.yandex.practicum.mainservice.exceptions.EntityNotFoundException;
+import ru.yandex.practicum.mainservice.place.model.Place;
+import ru.yandex.practicum.mainservice.place.repository.PlaceRepository;
 import ru.yandex.practicum.mainservice.requests.model.Request;
 import ru.yandex.practicum.mainservice.requests.repository.RequestRepository;
+import ru.yandex.practicum.statdto.StatsDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class EventAdminServiceImpl implements EventAdminService {
 
     private final RequestRepository requestRepository;
 
+    private final PlaceRepository placeRepository;
 
     @Transactional
     @Override
@@ -98,6 +102,18 @@ public class EventAdminServiceImpl implements EventAdminService {
         return toEventFullDto(events,
                 clientHandler.getStatsForEvents(events, LocalDateTime.now().minusYears(100), LocalDateTime.now()),
                 confirmedRequests);
+    }
+
+    @Override
+    public List<EventFullDto> getEventsByLocation(long placeId, int from, int size) {
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Place with id=%s was not found", placeId)));
+        List<Event> eventsByLocation = eventRepository
+                .findEventsByLocation(place.getLat(), place.getLon(), place.getRadius());
+        List<Request> confirmedRequests = requestRepository.findAllByStatusAndEventIn(CONFIRMED, eventsByLocation);
+        List<StatsDto> statsForEvents = clientHandler
+                .getStatsForEvents(eventsByLocation, LocalDateTime.now().minusYears(100), LocalDateTime.now());
+        return toEventFullDto(eventsByLocation, statsForEvents, confirmedRequests);
     }
 
     private Event updateEvent(Event event, UpdateEventAdminRequest updateEvent) {

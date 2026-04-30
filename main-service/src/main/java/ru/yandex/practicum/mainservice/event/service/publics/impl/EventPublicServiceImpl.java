@@ -15,8 +15,11 @@ import ru.yandex.practicum.mainservice.event.repository.EventRepository;
 import ru.yandex.practicum.mainservice.event.service.publics.EventPublicService;
 import ru.yandex.practicum.mainservice.event.stateclient.ClientHandler;
 import ru.yandex.practicum.mainservice.exceptions.EntityNotFoundException;
+import ru.yandex.practicum.mainservice.place.model.Place;
+import ru.yandex.practicum.mainservice.place.repository.PlaceRepository;
 import ru.yandex.practicum.mainservice.requests.model.Request;
 import ru.yandex.practicum.mainservice.requests.repository.RequestRepository;
+import ru.yandex.practicum.statdto.StatsDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ public class EventPublicServiceImpl implements EventPublicService {
 
     private final RequestRepository requestRepository;
 
+    private final PlaceRepository placeRepository;
 
     @Override
     public List<EventShortDto> getEvents(GetEventsForPublicRequest request) {
@@ -90,6 +94,18 @@ public class EventPublicServiceImpl implements EventPublicService {
         return toEventShortDto(events,
                 clientHandler.getStatsForEvents(events, LocalDateTime.now().minusYears(100), LocalDateTime.now()),
                 confirmedRequests);
+    }
+
+    @Override
+    public List<EventShortDto> getEventsByLocation(long placeId, int from, int size) {
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Place with id=%s was not found", placeId)));
+        List<Event> eventsByLocation = eventRepository
+                .findPublishedEventsByLocation(place.getLat(), place.getLon(), place.getRadius());
+        List<Request> confirmedRequests = requestRepository.findAllByStatusAndEventIn(CONFIRMED, eventsByLocation);
+        List<StatsDto> statsForEvents = clientHandler
+                .getStatsForEvents(eventsByLocation, LocalDateTime.now().minusYears(100), LocalDateTime.now());
+        return toEventShortDto(eventsByLocation, statsForEvents, confirmedRequests);
     }
 
     @Override

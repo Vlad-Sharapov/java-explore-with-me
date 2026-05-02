@@ -34,7 +34,6 @@ public class StatMapper {
                 formatter);
 
         return Hit.builder()
-                .id(hitDto.getId())
                 .app(hitDto.getApp())
                 .uri(hitDto.getUri())
                 .ip(hitDto.getIp())

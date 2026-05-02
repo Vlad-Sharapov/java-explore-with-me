@@ -1,9 +1,9 @@
 package ru.yandex.practicum.mainservice.compilation.model;
 
+import jakarta.persistence.*;
 import lombok.*;
 import ru.yandex.practicum.mainservice.event.model.Event;
 
-import javax.persistence.*;
 import java.util.Set;
 
 @Setter

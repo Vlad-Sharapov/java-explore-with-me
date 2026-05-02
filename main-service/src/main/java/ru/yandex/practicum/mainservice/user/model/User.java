@@ -1,8 +1,7 @@
 package ru.yandex.practicum.mainservice.user.model;
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 
 /**

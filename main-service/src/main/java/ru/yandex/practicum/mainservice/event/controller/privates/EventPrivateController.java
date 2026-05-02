@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.event.controller.privates;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import ru.yandex.practicum.mainservice.requests.dto.EventRequestStatusUpdateResu
 import ru.yandex.practicum.mainservice.requests.dto.ParticipationRequestDto;
 import ru.yandex.practicum.mainservice.requests.model.EventRequestStatusUpdateRequest;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,7 +38,7 @@ public class EventPrivateController {
         return eventService.update(userId, eventId, newEventDto);
     }
 
-    @PatchMapping("/{eventId}/requests")
+    @PatchMapping({"/{eventId}/requests", "/{eventId}/requests/"})
     public EventRequestStatusUpdateResult changeStatus(@PathVariable long userId,
                                                        @PathVariable long eventId,
                                                        @RequestBody EventRequestStatusUpdateRequest updateRequest) {

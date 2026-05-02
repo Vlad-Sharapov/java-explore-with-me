@@ -24,7 +24,6 @@ public class EventMapper {
 
     public static Event toEvent(NewEventDto eventDto, User initiator, Category category) {
         Event event = new Event();
-        event.setId(eventDto.getId());
         event.setInitiator(initiator);
         event.setAnnotation(eventDto.getAnnotation());
         event.setCategory(category);
@@ -127,5 +126,4 @@ public class EventMapper {
     }
 
 }
-
 

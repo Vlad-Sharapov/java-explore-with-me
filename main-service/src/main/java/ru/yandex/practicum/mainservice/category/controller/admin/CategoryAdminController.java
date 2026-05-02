@@ -1,13 +1,12 @@
 package ru.yandex.practicum.mainservice.category.controller.admin;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.category.dto.CategoryDto;
 import ru.yandex.practicum.mainservice.category.service.admin.CategoryAdminService;
-
-import javax.validation.Valid;
 
 @RestController
 @Slf4j

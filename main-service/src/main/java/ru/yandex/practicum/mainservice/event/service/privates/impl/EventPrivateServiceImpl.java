@@ -61,7 +61,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 .orElseThrow(() -> new EntityNotFoundException(String
                         .format("Category with id=%s was not found", newEventDto.getCategory())));
         Event event = EventMapper.toEvent(newEventDto, user, category);
-        long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, event.getId());
+        long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, 0L);
         try {
             Event newEvent = eventRepository.save(event);
             return toEventFullDto(newEvent, confirmedRequests);

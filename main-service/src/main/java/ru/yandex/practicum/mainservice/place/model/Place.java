@@ -1,8 +1,7 @@
 package ru.yandex.practicum.mainservice.place.model;
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 @Getter
 @Setter

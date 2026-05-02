@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.mainservice.user.dto.UserDto;
 import ru.yandex.practicum.mainservice.user.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 

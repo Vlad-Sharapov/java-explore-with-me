@@ -1,13 +1,12 @@
 package ru.yandex.practicum.mainservice.place.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 
 
 @Getter

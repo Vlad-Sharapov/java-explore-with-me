@@ -1,13 +1,13 @@
 package ru.yandex.practicum.mainservice.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.mainservice.event.model.Location;
 import ru.yandex.practicum.mainservice.event.utils.IsAfterHours;
 
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data

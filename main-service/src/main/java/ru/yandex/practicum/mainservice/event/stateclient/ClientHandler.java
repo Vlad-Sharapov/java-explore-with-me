@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.event.stateclient;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import ru.yandex.practicum.statdto.HitDto;
 import ru.yandex.practicum.statdto.StatParamDto;
 import ru.yandex.practicum.statdto.StatsDto;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;

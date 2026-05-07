@@ -41,7 +41,9 @@ public class StatServiceImpl implements StatService {
 
         checkDateTime(start, end);
 
-        if (uris == null) {
+        boolean hasUris = uris != null && !uris.isEmpty();
+
+        if (!hasUris) {
             if (unique) {
                 return StatMapper.toStatsDto(repository.getAllUniqueHits(start, end, JpaSort.unsafe(Sort.Direction.DESC, "count(h.uri)")));
             } else

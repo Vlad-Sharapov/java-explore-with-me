@@ -93,7 +93,7 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    public Request makeRequest(User user, Event event) {
+    private Request makeRequest(User user, Event event) {
         Request.RequestBuilder builder = Request.builder()
                 .created(LocalDateTime.now())
                 .requester(user)

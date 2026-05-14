@@ -48,7 +48,7 @@ public class Event {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    @Column(columnDefinition = "integer default false")
+    @Column(columnDefinition = "boolean default false")
     private boolean paid = false;
 
     @Column(name = "participant_limit", columnDefinition = "integer default 0")

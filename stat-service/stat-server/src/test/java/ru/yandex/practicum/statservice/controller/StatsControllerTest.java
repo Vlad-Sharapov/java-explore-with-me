@@ -56,7 +56,6 @@ class StatsControllerTest {
                 .andExpect(jsonPath("$.app").value("ewm"));
 
         Mockito.verify(statService).saveHit(Mockito.any(HitDto.class));
-
     }
 
     @Test

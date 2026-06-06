@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.mainservice.event.enums.userenum.UsrStateAction;
 import ru.yandex.practicum.mainservice.event.model.Location;
+import ru.yandex.practicum.mainservice.event.utils.IsAfterHours;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +32,7 @@ public class UpdateEventUserRequest {
 
     @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @IsAfterHours(hours = "2", message = "Field: eventDate. Error: Wrong date.")
     private LocalDateTime eventDate;
 
     private Location location;

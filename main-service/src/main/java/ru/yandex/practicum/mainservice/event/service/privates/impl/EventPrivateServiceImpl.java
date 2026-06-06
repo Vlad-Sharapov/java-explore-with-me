@@ -173,7 +173,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
         if (updateEvent.getStateAction() == UsrStateAction.CANCEL_REVIEW) {
             builder.state(EventState.CANCELED);
-        } else {
+        }
+        if (updateEvent.getStateAction() == UsrStateAction.SEND_TO_REVIEW) {
             builder.state(EventState.PENDING);
         }
         return builder.build();

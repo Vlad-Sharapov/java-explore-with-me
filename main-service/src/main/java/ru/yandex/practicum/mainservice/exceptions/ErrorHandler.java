@@ -52,7 +52,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.toString(),
-                "Incorrectly made request.asd",
+                "Incorrectly made request.",
                 Objects.requireNonNull(e.getFieldError()).getDefaultMessage(),
                 LocalDateTime.now().format(formatter));
     }

@@ -29,7 +29,7 @@ public class Event {
 
     private String title;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 

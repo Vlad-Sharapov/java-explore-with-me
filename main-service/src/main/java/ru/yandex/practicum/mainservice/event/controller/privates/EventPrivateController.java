@@ -58,13 +58,11 @@ public class EventPrivateController {
     public EventFullDto event(@PathVariable long userId,
                               @PathVariable long eventId) {
         return eventService.getUserEvent(userId, eventId);
-
     }
 
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> eventRequests(@PathVariable long userId,
                                                        @PathVariable long eventId) {
         return eventService.getUserEventRequests(userId, eventId);
-
     }
 }

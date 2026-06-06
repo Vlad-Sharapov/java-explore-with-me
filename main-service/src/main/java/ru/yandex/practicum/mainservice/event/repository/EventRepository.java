@@ -24,13 +24,13 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     Set<Event> findAllByIdAsSet(Collection<Long> id);
 
 
-    @Query(value = "SELECT * FROM events e " +
+    @Query(value = "SELECT e.* FROM events e " +
             "JOIN location l ON e.location_id = l.id " +
             "WHERE distance(?1,?2,l.lat,l.lon) < ?3 " +
             "ORDER BY distance(?1,?2,l.lat,l.lon)", nativeQuery = true)
     List<Event> findEventsByLocation(double lat1, double lon1, double radius);
 
-    @Query(value = "SELECT * FROM events e " +
+    @Query(value = "SELECT e.* FROM events e " +
             "JOIN location l ON e.location_id = l.id " +
             "WHERE distance(?1,?2,l.lat,l.lon) < ?3 " +
             "AND e.state = 'PUBLISHED' " +

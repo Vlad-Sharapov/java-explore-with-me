@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import ru.yandex.practicum.mainservice.EventTestData;
 import ru.yandex.practicum.mainservice.category.model.Category;
 import ru.yandex.practicum.mainservice.category.repository.CategoryRepository;
 import ru.yandex.practicum.mainservice.event.dto.*;
@@ -37,13 +38,14 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.yandex.practicum.mainservice.EventTestData.*;
 import static ru.yandex.practicum.mainservice.requests.enums.RequestStatus.CONFIRMED;
+import static ru.yandex.practicum.mainservice.requests.enums.RequestStatus.PENDING;
 
 
 @ExtendWith(MockitoExtension.class)
 class EventPrivateServiceImplTest {
 
-    private static final LocalDateTime FIXED_TIME = LocalDateTime.of(2026, 1, 10, 12, 0, 0);
 
     @InjectMocks
     private EventPrivateServiceImpl eventPrivateService;
@@ -66,7 +68,7 @@ class EventPrivateServiceImplTest {
     @Test
     void shouldAddNewEvent() {
 
-        Category category = makeCategory(1L);
+        Category category = EventTestData.makeCategory(1L);
         Location location = makeLocation(1L);
         User user = makeUser(1L);
 
@@ -218,6 +220,7 @@ class EventPrivateServiceImplTest {
         Category category = makeCategory(1L);
         Location location = makeLocation(1L);
         Event event = makeEvent(initiator, category, location)
+                .createOn(FIXED_TIME)
                 .build();
         Mockito.when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.of(user));
@@ -332,9 +335,7 @@ class EventPrivateServiceImplTest {
         Category category = makeCategory(1L);
         Location location = makeLocation(1L);
         Event event = makeEvent(initiator, category, location)
-                .build();
-        Event event1 = makeEvent(initiator, category, location)
-                .id(2L)
+                .createOn(FIXED_TIME)
                 .build();
 
         StatsDto statsDto1 = StatsDto.builder()
@@ -343,19 +344,52 @@ class EventPrivateServiceImplTest {
                 .app("ewm")
                 .build();
 
-        List<Event> events = List.of(event, event1);
-
         Mockito.when(userRepository.findById(initiator.getId()))
                 .thenReturn(Optional.of(initiator));
         Mockito.when(eventRepository.findById(event.getId()))
                 .thenReturn(Optional.of(event));
-        Mockito.when(requestRepository.findAllByStatusAndEventIn(CONFIRMED, events))
-                .thenReturn(List.of());
+        Mockito.when(requestRepository.countAllByStatusAndEventId(CONFIRMED, event.getId()))
+                .thenReturn(3L);
 
         Mockito.when(clientHandler.getStatsForEvent(Mockito.eq(event),
                         Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class)))
                 .thenReturn(List.of(statsDto1));
 
+        EventFullDto result = eventPrivateService.getUserEvent(initiator.getId(), event.getId());
+
+        assertThat(result, allOf(
+                hasProperty("id", equalTo(event.getId())),
+                hasProperty("title", equalTo(event.getTitle())),
+                hasProperty("annotation", equalTo(event.getAnnotation())),
+                hasProperty("description", equalTo(event.getDescription())),
+                hasProperty("createdOn", equalTo("2026-01-10 12:00:00")),
+                hasProperty("publishedOn", equalTo("2026-01-10 17:00:00")),
+                hasProperty("eventDate", equalTo("2026-01-11 12:00:00")),
+                hasProperty("paid", equalTo(event.isPaid())),
+                hasProperty("participantLimit", equalTo(event.getParticipantLimit())),
+                hasProperty("requestModeration", equalTo(event.isRequestModeration())),
+                hasProperty("state", equalTo(event.getState())),
+                hasProperty("confirmedRequests", equalTo(3L)),
+                hasProperty("views", equalTo(4L))
+        ));
+
+        assertThat(result.getCategory(), allOf(
+                hasProperty("id", equalTo(category.getId())),
+                hasProperty("name", equalTo(category.getName()))
+        ));
+        assertThat(result.getInitiator(), allOf(
+                hasProperty("id", equalTo(initiator.getId())),
+                hasProperty("name", equalTo(initiator.getName())),
+                hasProperty("email", equalTo(initiator.getEmail()))
+        ));
+        assertThat(result.getLocation(), allOf(
+                hasProperty("lat", equalTo(location.getLat())),
+                hasProperty("lon", equalTo(location.getLon()))
+        ));
+
+        Mockito.verify(requestRepository).countAllByStatusAndEventId(CONFIRMED, event.getId());
+        Mockito.verify(clientHandler).getStatsForEvent(Mockito.eq(event),
+                Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class));
     }
 
     @Test
@@ -378,6 +412,7 @@ class EventPrivateServiceImplTest {
         Location location = makeLocation(1L);
 
         Event event = makeEvent(initiator, category, location)
+                .id(1L)
                 .state(EventState.PENDING)
                 .requestModeration(true)
                 .participantLimit(5)
@@ -388,6 +423,9 @@ class EventPrivateServiceImplTest {
 
         Mockito.when(requestRepository.findAllByEventId(Mockito.anyLong()))
                 .thenReturn(List.of(makeRequest(1L, event, initiator).build()));
+
+        Mockito.when(eventRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(event));
 
         List<ParticipationRequestDto> userRequests = eventPrivateService
                 .getUserEventRequests(initiator.getId(), event.getId());
@@ -478,75 +516,35 @@ class EventPrivateServiceImplTest {
         Mockito.verify(requestRepository, Mockito.never()).saveAll(Mockito.any());
     }
 
-
-    void shouldThrowExceptionWhenConfirmedRequestsIsOverLimit() {
-        User initiator = makeUser(1L);
-    }
-
     @Test
-    void shouldThrowWhenLimitExceeded() {
+    void shouldThrowExceptionWhenConfirmedRequestsIsOverLimit() {
+        User user = makeUser(1L);
+        Event event = makeEvent(user, makeCategory(1L), makeLocation(1L))
+                .participantLimit(2).build();
 
-    }
-
-    private User makeUser(Long id) {
-        return User.builder()
-                .id(id)
-                .name("Ben")
-                .email("user" + id + "@a.ru")
+        Request confirmedRequest = makeRequest(1L, event, makeUser(2L))
+                .status(CONFIRMED)
                 .build();
-    }
-
-    private NewEventDto.NewEventDtoBuilder makeEventDto(Category category, Location location) {
-        return NewEventDto.builder()
-                .annotation("Annotation")
-                .category(category.getId())
-                .description("Description")
-                .eventDate(FIXED_TIME.plusDays(2))
-                .location(location)
-                .paid(false)
-                .participantLimit(10)
-                .requestModeration(true)
-                .title("Concert");
-    }
-
-    private Event.EventBuilder makeEvent(User initiator, Category category, Location location) {
-        return Event.builder()
-                .id(1L)
-                .initiator(initiator)
-                .annotation("annotation")
-                .title("event1")
-                .category(category)
-                .publishedOn(FIXED_TIME.plusHours(5))
-                .description("qwer tyui op[a sdfg hjkl;x")
-                .eventDate(FIXED_TIME.plusHours(24))
-                .location(location)
-                .paid(false)
-                .requestModeration(true)
-                .participantLimit(5)
-                .state(EventState.PENDING);
-    }
-
-    private Request.RequestBuilder makeRequest(Long id, Event event, User user) {
-        return Request.builder()
-                .id(id)
-                .event(event)
-                .requester(user)
-                .created(FIXED_TIME)
-                .status(RequestStatus.PENDING);
-
-    }
-
-    private Category makeCategory(Long id) {
-        return Category.builder()
-                .id(1L)
-                .name("category1")
+        Request confirmedRequest2 = makeRequest(2L, event, makeUser(3L))
+                .status(CONFIRMED)
                 .build();
+        Request pendingRequest3 = makeRequest(3L, event, makeUser(4L))
+                .status(PENDING)
+                .build();
+
+        EventRequestStatusUpdateRequest updateRequest = new EventRequestStatusUpdateRequest();
+        updateRequest.setRequestIds(List.of(pendingRequest3.getId()));
+        updateRequest.setStatus(CONFIRMED);
+
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        Mockito.when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
+        Mockito.when(requestRepository.findAllByEventId(event.getId()))
+                .thenReturn(List.of(confirmedRequest, confirmedRequest2, pendingRequest3));
+
+        assertThrows(EntitiesConflictException.class,
+                () -> eventPrivateService.confirmRequests(user.getId(), event.getId(), updateRequest));
+
+        Mockito.verify(requestRepository, Mockito.never()).saveAll(Mockito.any());
     }
 
-    private Location makeLocation(long id) {
-        return Location.builder()
-                .lat(55.75)
-                .lon(37.61)
-                .build();
-    }
 }

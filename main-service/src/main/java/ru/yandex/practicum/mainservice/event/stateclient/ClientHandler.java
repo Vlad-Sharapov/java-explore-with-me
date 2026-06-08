@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.event.stateclient;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import ru.yandex.practicum.statdto.HitDto;
 import ru.yandex.practicum.statdto.StatParamDto;
 import ru.yandex.practicum.statdto.StatsDto;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -30,7 +30,7 @@ public class ClientHandler {
     private String host;
 
     @Value("${main-server.app-name}")
-    private String APP;
+    private String applicationName;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -71,7 +71,7 @@ public class ClientHandler {
 
     public void addHit(HttpServletRequest request) {
         statClient.addHit(host, HitDto.builder()
-                .app(APP)
+                .app(applicationName)
                 .timestamp(LocalDateTime.now().format(formatter))
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())

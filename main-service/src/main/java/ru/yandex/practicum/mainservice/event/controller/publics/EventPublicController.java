@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.event.controller.publics;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,6 @@ import ru.yandex.practicum.mainservice.event.model.GetEventsForPublicRequest;
 import ru.yandex.practicum.mainservice.event.service.publics.EventPublicService;
 import ru.yandex.practicum.mainservice.event.stateclient.ClientHandler;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 

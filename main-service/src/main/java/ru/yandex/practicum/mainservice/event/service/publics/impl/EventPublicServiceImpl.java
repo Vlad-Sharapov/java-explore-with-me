@@ -23,6 +23,7 @@ import ru.yandex.practicum.statdto.StatsDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,11 +80,9 @@ public class EventPublicServiceImpl implements EventPublicService {
         Optional<BooleanExpression> maybeFinallyCondition = conditions.stream()
                 .reduce(BooleanExpression::and);
         List<Event> events;
-        if (maybeFinallyCondition.isPresent()) {
-            events = eventRepository.findAll(maybeFinallyCondition.get(), pageRequest).getContent();
-        } else {
-            events = eventRepository.findAll(pageRequest).getContent();
-        }
+
+        events = eventRepository.findAll(maybeFinallyCondition.get(), pageRequest).getContent();
+
         List<Request> confirmedRequests = requestRepository.findAllByStatusAndEventIn(CONFIRMED, events);
 
         if (request.getOnlyAvailable()) {
@@ -91,9 +90,17 @@ public class EventPublicServiceImpl implements EventPublicService {
                     .filter(e -> e.getParticipantLimit() > getEventConfirmedRequests(e.getId(), confirmedRequests).size())
                     .collect(Collectors.toList());
         }
-        return toEventShortDto(events,
+        List<EventShortDto> result = toEventShortDto(events,
                 clientHandler.getStatsForEvents(events, LocalDateTime.now().minusYears(100), LocalDateTime.now()),
                 confirmedRequests);
+
+        if (request.getSort() == GetEventsForPublicRequest.Sort.VIEWS) {
+            result = result.stream()
+                    .sorted(Comparator.comparing(EventShortDto::getViews))
+                    .toList();
+        }
+
+        return result;
     }
 
     @Override
@@ -112,7 +119,7 @@ public class EventPublicServiceImpl implements EventPublicService {
     public EventFullDto getEvent(long eventId) {
         Event event = eventRepository
                 .findByIdAndState(eventId, PUBLISHED)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found", eventId)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%s was not found or not published", eventId)));
         return toEventFullDto(event,
                 clientHandler
                         .getStatsForEvent(event, LocalDateTime.now().minusYears(100), LocalDateTime.now().plusHours(1)),
@@ -120,14 +127,10 @@ public class EventPublicServiceImpl implements EventPublicService {
     }
 
     private Sort makeOrderByClause(GetEventsForPublicRequest.Sort sort) {
-        switch (sort) {
-            case EVENT_DATE:
-                return Sort.by("eventDate").ascending();
-            case VIEWS:
-                return Sort.by("views").ascending();
-            default:
-                return Sort.by("eventDate").descending();
+        if (sort == GetEventsForPublicRequest.Sort.EVENT_DATE) {
+            return Sort.by("eventDate").ascending();
         }
+        return Sort.unsorted();
     }
 
     private List<Request> getEventConfirmedRequests(long eventId, List<Request> confirmedRequests) {

@@ -6,6 +6,7 @@ import ru.yandex.practicum.statdto.StatsDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 public interface StatService {
 
     HitDto saveHit(HitDto hitDto);

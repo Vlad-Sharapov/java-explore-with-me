@@ -1,5 +1,6 @@
 package ru.yandex.practicum.statservice.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import ru.yandex.practicum.statdto.HitDto;
 import ru.yandex.practicum.statdto.StatsDto;
 import ru.yandex.practicum.statservice.service.StatService;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 

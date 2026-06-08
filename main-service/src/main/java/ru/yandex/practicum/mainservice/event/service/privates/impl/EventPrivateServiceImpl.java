@@ -2,7 +2,6 @@ package ru.yandex.practicum.mainservice.event.service.privates.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import ru.yandex.practicum.mainservice.event.model.QEvent;
 import ru.yandex.practicum.mainservice.event.repository.EventRepository;
 import ru.yandex.practicum.mainservice.event.service.privates.EventPrivateService;
 import ru.yandex.practicum.mainservice.event.stateclient.ClientHandler;
-import ru.yandex.practicum.mainservice.exceptions.BadRequestException;
 import ru.yandex.practicum.mainservice.exceptions.EntitiesConflictException;
 import ru.yandex.practicum.mainservice.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.mainservice.requests.dto.EventRequestStatusUpdateResult;
@@ -37,6 +35,7 @@ import static ru.yandex.practicum.mainservice.event.dto.EventMapper.toEventFullD
 import static ru.yandex.practicum.mainservice.event.dto.EventMapper.toEventShortDto;
 import static ru.yandex.practicum.mainservice.requests.dto.RequestMapper.toParticipationRequestDto;
 import static ru.yandex.practicum.mainservice.requests.enums.RequestStatus.CONFIRMED;
+import static ru.yandex.practicum.mainservice.requests.enums.RequestStatus.PENDING;
 
 @Service
 @RequiredArgsConstructor
@@ -61,13 +60,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 .orElseThrow(() -> new EntityNotFoundException(String
                         .format("Category with id=%s was not found", newEventDto.getCategory())));
         Event event = EventMapper.toEvent(newEventDto, user, category);
-        long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, event.getId());
-        try {
-            Event newEvent = eventRepository.save(event);
-            return toEventFullDto(newEvent, confirmedRequests);
-        } catch (DataIntegrityViolationException e) {
-            throw new BadRequestException("Required fields are not filled in");
-        }
+        Event newEvent = eventRepository.save(event);
+        return toEventFullDto(newEvent, 0L);
     }
 
     @Transactional
@@ -82,8 +76,10 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             throw new EntitiesConflictException("Event must not be published");
         }
         Event updatedEvent = updateEvent(event, updateEvent);
+        Event savedEvent = eventRepository.save(updatedEvent);
+
         long confirmedRequests = requestRepository.countAllByStatusAndEventId(CONFIRMED, updatedEvent.getId());
-        return toEventFullDto(updatedEvent, confirmedRequests);
+        return toEventFullDto(savedEvent, confirmedRequests);
     }
 
     @Override
@@ -128,9 +124,16 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     @Transactional
     @Override
-    public EventRequestStatusUpdateResult confirmRequests(long userId, long eventId, EventRequestStatusUpdateRequest updateResult) {
-        findUser(userId);
+    public EventRequestStatusUpdateResult confirmRequests(long userId,
+                                                          long eventId,
+                                                          EventRequestStatusUpdateRequest updateResult) {
+        User user = findUser(userId);
         Event event = findEvent(eventId);
+
+        if (!user.getId().equals(event.getInitiator().getId())) {
+            throw new EntitiesConflictException("The user can only change his own events");
+        }
+
         List<Request> eventRequests = requestRepository.findAllByEventId(eventId);
         List<Request> requests = updateRequestsStatus(event, eventRequests, updateResult);
         return makeResponse(requestRepository.saveAll(requests));
@@ -170,30 +173,42 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
         if (updateEvent.getStateAction() == UsrStateAction.CANCEL_REVIEW) {
             builder.state(EventState.CANCELED);
-        } else {
+        }
+        if (updateEvent.getStateAction() == UsrStateAction.SEND_TO_REVIEW) {
             builder.state(EventState.PENDING);
         }
         return builder.build();
     }
 
-    private List<Request> updateRequestsStatus(Event event, List<Request> requests, EventRequestStatusUpdateRequest updateResult) {
-        List<Long> maybeUpdatedRequests = updateResult.getRequestIds();
-        int participantLimit = event.getParticipantLimit();
-        if (participantLimit != 0 && event.isRequestModeration()) {
+    private List<Request> updateRequestsStatus(Event event,
+                                               List<Request> requests,
+                                               EventRequestStatusUpdateRequest updateResult) {
+        List<Long> requestIds = updateResult.getRequestIds();
+
+        List<Request> requestsToUpdate = requests.stream()
+                .filter(request -> requestIds.contains(request.getId()))
+                .collect(Collectors.toList());
+
+        boolean hasNotPendingRequest = requestsToUpdate.stream()
+                .anyMatch(request -> request.getStatus() != PENDING);
+
+        if (hasNotPendingRequest) {
+            throw new EntitiesConflictException("Request status can be changed only for pending requests");
+        }
+
+        if (updateResult.getStatus() == CONFIRMED && event.getParticipantLimit() != 0) {
             long confirmedRequests = requests.stream()
                     .filter(request -> request.getStatus() == CONFIRMED)
                     .count();
-            if ((confirmedRequests + maybeUpdatedRequests.size()) > participantLimit) {
+
+            if ((confirmedRequests + requestsToUpdate.size()) > event.getParticipantLimit()) {
                 throw new EntitiesConflictException("The limit of requests for the event has been reached");
             }
-            return requests.stream().filter(request -> maybeUpdatedRequests.contains(request.getId()))
-                    .peek(request -> request.setStatus(updateResult.getStatus()))
-                    .collect(Collectors.toList());
-        } else {
-            return requests.stream().filter(request -> maybeUpdatedRequests.contains(request.getId()))
-                    .peek(request -> request.setStatus(updateResult.getStatus()))
-                    .collect(Collectors.toList());
         }
+
+        requestsToUpdate.forEach(request -> request.setStatus(updateResult.getStatus()));
+
+        return requestsToUpdate;
     }
 
     private EventRequestStatusUpdateResult makeResponse(List<Request> requests) {

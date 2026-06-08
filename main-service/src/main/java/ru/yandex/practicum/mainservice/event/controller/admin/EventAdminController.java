@@ -1,5 +1,6 @@
 package ru.yandex.practicum.mainservice.event.controller.admin;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,6 @@ import ru.yandex.practicum.mainservice.event.dto.UpdateEventAdminRequest;
 import ru.yandex.practicum.mainservice.event.model.GetEventsForAdminRequest;
 import ru.yandex.practicum.mainservice.event.service.admin.EventAdminService;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package ru.yandex.practicum.mainservice.compilation.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.mainservice.event.dto.EventShortDto;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Data

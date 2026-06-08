@@ -64,10 +64,18 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestRepository
                 .findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Request with id=%s was not found", requestId)));
+        if (!request.getRequester().getId().equals(userId)) {
+            throw new EntitiesConflictException(String.format("This user with id=%s is not a requester.", requestId));
+        }
+        if (request.getStatus() != PENDING) {
+            throw new EntitiesConflictException(String.format("You cannot cancel the request with id=%s because the " +
+                    "request has been confirmed/rejected by the initiator", requestId));
+        }
         Request canceledRequest = request.toBuilder()
                 .status(CANCELED)
                 .build();
         return toParticipationRequestDto(requestRepository.save(canceledRequest));
+
     }
 
     private void validateRequest(Request request) {
@@ -93,7 +101,7 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    public Request makeRequest(User user, Event event) {
+    private Request makeRequest(User user, Event event) {
         Request.RequestBuilder builder = Request.builder()
                 .created(LocalDateTime.now())
                 .requester(user)

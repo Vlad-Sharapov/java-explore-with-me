@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.statdto.HitDto;
 import ru.yandex.practicum.statdto.StatsDto;
 import ru.yandex.practicum.statservice.dto.StatMapper;
@@ -13,7 +14,6 @@ import ru.yandex.practicum.statservice.model.Hit;
 import ru.yandex.practicum.statservice.repository.StatRepository;
 import ru.yandex.practicum.statservice.service.StatService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,7 +41,9 @@ public class StatServiceImpl implements StatService {
 
         checkDateTime(start, end);
 
-        if (uris == null) {
+        boolean hasUris = uris != null && !uris.isEmpty();
+
+        if (!hasUris) {
             if (unique) {
                 return StatMapper.toStatsDto(repository.getAllUniqueHits(start, end, JpaSort.unsafe(Sort.Direction.DESC, "count(h.uri)")));
             } else

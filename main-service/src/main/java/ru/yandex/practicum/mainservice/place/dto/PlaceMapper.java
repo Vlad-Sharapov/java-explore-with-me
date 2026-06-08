@@ -28,7 +28,6 @@ public class PlaceMapper {
 
     public static Place toPlace(PlaceDto place) {
         return Place.builder()
-                .id(place.getId())
                 .lat(place.getLat())
                 .lon(place.getLon())
                 .radius(place.getRadius())

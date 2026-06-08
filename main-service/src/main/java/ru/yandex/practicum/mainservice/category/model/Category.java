@@ -1,9 +1,8 @@
 package ru.yandex.practicum.mainservice.category.model;
 
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 @Setter
 @Getter

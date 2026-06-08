@@ -38,6 +38,7 @@ public class LocationAdminServiceImpl implements LocationAdminService {
         return toPlaceDto(updatedPlace);
     }
 
+    @Override
     public List<PlaceDto> getPlaces(String text, int from, int size) {
         PageRequest pageRequest = PageRequest
                 .of(from > 0 ? from / size : 0, size);

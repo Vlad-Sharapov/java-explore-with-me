@@ -153,9 +153,9 @@ public class EventAdminServiceImpl implements EventAdminService {
             builder.title(updateEvent.getTitle());
         }
         if (updateEvent.getStateAction() == AdmStateAction.PUBLISH_EVENT) {
-            if (event.getState() == EventState.PUBLISHED || event.getState() == EventState.CANCELED){
+            if (event.getState() == EventState.PUBLISHED || event.getState() == EventState.CANCELED) {
                 throw new EntitiesConflictException(String
-                        .format("Cannot publish the event because it's not in the right state: %s",event.getState()));
+                        .format("Cannot publish the event because it's not in the right state: %s", event.getState()));
             }
             builder.state(EventState.PUBLISHED);
             builder.publishedOn(LocalDateTime.now());

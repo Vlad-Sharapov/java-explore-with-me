@@ -30,7 +30,7 @@ public class ClientHandler {
     private String host;
 
     @Value("${main-server.app-name}")
-    private String APP;
+    private String applicationName;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -71,7 +71,7 @@ public class ClientHandler {
 
     public void addHit(HttpServletRequest request) {
         statClient.addHit(host, HitDto.builder()
-                .app(APP)
+                .app(applicationName)
                 .timestamp(LocalDateTime.now().format(formatter))
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())

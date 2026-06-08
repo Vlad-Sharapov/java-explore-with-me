@@ -292,10 +292,10 @@ class RequestServiceImplTest {
                 .build();
 
         Request newRequest = makeRequest(1L, event, user)
-                .status(CONFIRMED)
+                .status(PENDING)
                 .build();
 
-        Request CanceledRequest = makeRequest(1L, event, user)
+        Request canceledRequest = makeRequest(1L, event, user)
                 .status(CANCELED)
                 .build();
 
@@ -306,10 +306,10 @@ class RequestServiceImplTest {
                 .thenReturn(Optional.of(newRequest));
 
         Mockito.when(requestRepository.save(Mockito.any()))
-                .thenReturn(CanceledRequest);
+                .thenReturn(canceledRequest);
 
         ParticipationRequestDto participationRequestDto = requestService
-                .canceledRequest(initiator.getId(), newRequest.getId());
+                .canceledRequest(user.getId(), newRequest.getId());
 
         ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
 

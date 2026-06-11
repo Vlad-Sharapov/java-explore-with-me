@@ -1,7 +1,6 @@
-CREATE OR REPLACE FUNCTION distance(lat1 float, lon1 float, lat2 float, lon2 float)
+CREATE FUNCTION distance(lat1 float, lon1 float, lat2 float, lon2 float)
     RETURNS float
-AS
-'
+AS '
     declare
         dist      float = 0;
         rad_lat1  float;
